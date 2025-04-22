@@ -102,10 +102,10 @@ def avaliar_personalidade():
             "dica": dicas[cat][nivel]
         }
 
-   # Pega as 2 maiores características
+
     duas_maiores = sorted(perfil_completo.items(), key=lambda item: item[1]["pontuacao"], reverse=True)[:2]
 
-# Reordena essas duas em ordem crescente
+
     duas_maiores_ordenadas = dict(sorted(duas_maiores, key=lambda item: item[1]["pontuacao"]))
 
     return jsonify({"perfil_ordenado": duas_maiores_ordenadas})
