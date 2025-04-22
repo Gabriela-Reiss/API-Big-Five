@@ -11,8 +11,8 @@ def avaliar_personalidade():
 
     categorias = {
         "abertura": [],
-        "consciencia": [],
-        "extroversao": [],
+        "consciência": [],
+        "extroversão": [],
         "amabilidade": [],
         "neuroticismo": []
     }
@@ -23,20 +23,25 @@ def avaliar_personalidade():
         if categoria in categorias:
             categorias[categoria].append(valor)
 
-    resultados = {cat: sum(valores) / len(valores) if valores else 0 for cat, valores in categorias.items()}
+    # Médias por categoria
+    medias = {cat: sum(valores) / len(valores) if valores else 0 for cat, valores in categorias.items()}
 
+    # Soma total das médias para normalização
+    soma_total = sum(medias.values())
+
+    # Dicionários de interpretações e dicas (mantido como no seu código)
     interpretacoes = {
         "abertura": {
             "alta": "Você é uma pessoa criativa, curiosa e aberta a novas ideias e experiências.",
             "media": "Você aprecia novas ideias, mas também valoriza a tradição.",
             "baixa": "Você prefere o que é familiar e tende a evitar mudanças."
         },
-        "consciencia": {
+        "consciência": {
             "alta": "Você é uma pessoa organizada, responsável e cumpre seus compromissos.",
             "media": "Você se esforça para ser organizada, mas também sabe ser flexível.",
             "baixa": "Você pode ter dificuldades com organização e prazos."
         },
-        "extroversao": {
+        "extroversão": {
             "alta": "Você é uma pessoa sociável, enérgica e gosta de estar com outras pessoas.",
             "media": "Você se sente confortável tanto em grupos quanto sozinha.",
             "baixa": "Você é mais reservada e prefere ambientes calmos."
@@ -59,12 +64,12 @@ def avaliar_personalidade():
             "media": "Experimente sair um pouco da rotina com atividades criativas ou culturais.",
             "baixa": "Tente se expor gradualmente a novas experiências ou pontos de vista diferentes."
         },
-        "consciencia": {
+        "consciência": {
             "alta": "Mantenha sua organização, mas permita-se ser flexível quando necessário.",
             "media": "Use listas ou metas curtas para manter o foco sem se sobrecarregar.",
             "baixa": "Experimente usar planejadores ou alarmes para ajudar na organização do dia a dia."
         },
-        "extroversao": {
+        "extroversão": {
             "alta": "Continue se conectando com os outros, mas lembre-se de respeitar os momentos de silêncio.",
             "media": "Equilibre momentos sociais e de introspecção para manter seu bem-estar.",
             "baixa": "Tente participar de grupos pequenos ou ambientes seguros para socializar aos poucos."
@@ -83,8 +88,8 @@ def avaliar_personalidade():
 
     perfil_completo = {}
 
-    for cat, media in resultados.items():
-        percentual = (media / 5) * 100  # Convertendo para porcentagem (0-100%)
+    for cat, media in medias.items():
+        percentual = (media / soma_total) * 100 if soma_total != 0 else 0
         if media >= 4:
             nivel = "alta"
         elif media >= 2.5:
@@ -92,13 +97,19 @@ def avaliar_personalidade():
         else:
             nivel = "baixa"
         perfil_completo[cat] = {
-            "pontuacao": round(percentual, 1),  # Ex: 80.0%
+            "pontuacao": round(percentual, 1),
             "interpretacao": interpretacoes[cat][nivel],
             "dica": dicas[cat][nivel]
         }
 
-    top_2 = dict(sorted(perfil_completo.items(), key=lambda item: item[1]["pontuacao"], reverse=True)[:2])
-    return jsonify({"perfil_destacado": top_2})
+   # Pega as 2 maiores características
+    duas_maiores = sorted(perfil_completo.items(), key=lambda item: item[1]["pontuacao"], reverse=True)[:2]
+
+# Reordena essas duas em ordem crescente
+    duas_maiores_ordenadas = dict(sorted(duas_maiores, key=lambda item: item[1]["pontuacao"]))
+
+    return jsonify({"perfil_ordenado": duas_maiores_ordenadas})
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
